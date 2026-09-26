@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Calculator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div>
+            <h1>Smart Calculator</h1>
+            <p>Calculator & Utility Hub</p>
+        </div>
+
+        <button id="themeBtn" class="theme-btn" onclick="toggleTheme()">
+            🌙
+        </button>
+    </header>
+
+    <!-- Clock -->
+    <div class="clock">
+        <span id="date">Loading...</span>
+        <span id="time">Loading...</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="tabs">
+        <button class="tab active" onclick="showSection('calculator', this)">
+            🧮 Calculator
+        </button>
+
+        <button class="tab" onclick="showSection('tools', this)">
+            🛠 Tools
+        </button>
+
+        <button class="tab" onclick="showSection('converter', this)">
+            🔄 Converter
+        </button>
+    </nav>
+
+
+    <!-- ================= CALCULATOR ================= -->
+
+    <main id="calculator" class="section active-section">
+
+        <div class="calculator-container">
+
+            <!-- Calculator -->
+            <div class="calculator-card">
+
+                <div class="display-area">
+
+                    <div id="historyDisplay"></div>
+
+                    <input
+                        type="text"
+                        id="display"
+                        placeholder="0"
+                        readonly
+                    >
+
+                </div>
+
+                <!-- Angle Mode -->
+                <div class="angle-row">
+                    <button onclick="toggleAngle(this)" id="angleBtn">
+                        DEG
+                    </button>
+                </div>
+
+                <!-- Memory -->
+                <div class="memory-row">
+
+                    <button onclick="memoryClear()">MC</button>
+                    <button onclick="memoryRecall()">MR</button>
+                    <button onclick="memoryAdd()">M+</button>
+                    <button onclick="memorySubtract()">M-</button>
+                    <button onclick="memoryStore()">MS</button>
+
+                </div>
+
+                <!-- Scientific Buttons -->
+                <div class="scientific-grid">
+
+                    <button onclick="scientific('sin')">sin</button>
+                    <button onclick="scientific('cos')">cos</button>
+                    <button onclick="scientific('tan')">tan</button>
+                    <button onclick="scientific('sqrt')">√</button>
+
+                    <button onclick="scientific('square')">x²</button>
+                    <button onclick="scientific('log')">log</button>
+                    <button onclick="scientific('ln')">ln</button>
+                    <button onclick="scientific('factorial')">x!</button>
+
+                    <button onclick="insertValue('Math.PI')">π</button>
+                    <button onclick="insertValue('Math.E')">e</button>
+                    <button onclick="scientific('inverse')">1/x</button>
+                    <button onclick="insertValue('**')">xʸ</button>
+
+                </div>
+
+                <!-- Main Calculator -->
+                <div class="calculator-grid">
+
+                    <button class="danger" onclick="clearDisplay()">AC</button>
+                    <button onclick="deleteLast()">⌫</button>
+                    <button onclick="insertValue('(')">(</button>
+                    <button onclick="insertValue(')')">)</button>
+
+                    <button onclick="insertValue('7')">7</button>
+                    <button onclick="insertValue('8')">8</button>
+                    <button onclick="insertValue('9')">9</button>
+                    <button class="operator" onclick="insertValue('/')">÷</button>
+
+                    <button onclick="insertValue('4')">4</button>
+                    <button onclick="insertValue('5')">5</button>
+                    <button onclick="insertValue('6')">6</button>
+                    <button class="operator" onclick="insertValue('*')">×</button>
+
+                    <button onclick="insertValue('1')">1</button>
+                    <button onclick="insertValue('2')">2</button>
+                    <button onclick="insertValue('3')">3</button>
+                    <button class="operator" onclick="insertValue('-')">−</button>
+
+                    <button onclick="insertValue('0')">0</button>
+                    <button onclick="insertValue('.')">.</button>
+                    <button class="equal" onclick="calculate()">=</button>
+                    <button class="operator" onclick="insertValue('+')">+</button>
+
+                </div>
+
+            </div>
+
+
+            <!-- History -->
+            <div class="history-card">
+
+                <div class="history-header">
+                    <h2>History</h2>
+
+                    <button onclick="clearHistory()">
+                        Clear
+                    </button>
+                </div>
+
+                <div id="historyList">
+                    <p class="empty">
+                        No calculations yet.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= TOOLS ================= -->
+
+    <section id="tools" class="section">
+
+        <div class="tools-grid">
+
+            <!-- Stopwatch -->
+            <div class="tool-card">
+
+                <h2>⏱ Stopwatch</h2>
+
+                <div id="stopwatchDisplay" class="big-display">
+                    00:00:00
+                </div>
+
+                <div class="tool-buttons">
+
+                    <button onclick="startStopwatch()">
+                        Start
+                    </button>
+
+                    <button onclick="stopStopwatch()">
+                        Stop
+                    </button>
+
+                    <button onclick="resetStopwatch()">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Countdown -->
+            <div class="tool-card">
+
+                <h2>⏳ Countdown Timer</h2>
+
+                <div class="timer-inputs">
+
+                    <input
+                        type="number"
+                        id="minutesInput"
+                        placeholder="Minutes"
+                        min="0"
+                    >
+
+                    <input
+                        type="number"
+                        id="secondsInput"
+                        placeholder="Seconds"
+                        min="0"
+                        max="59"
+                    >
+
+                </div>
+
+                <div id="countdownDisplay" class="big-display">
+                    00:00
+                </div>
+
+                <div class="tool-buttons">
+
+                    <button onclick="startCountdown()">
+                        Start
+                    </button>
+
+                    <button onclick="stopCountdown()">
+                        Stop
+                    </button>
+
+                    <button onclick="resetCountdown()">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= CONVERTER ================= -->
+
+    <section id="converter" class="section">
+
+        <div class="converter-card">
+
+            <h2>🔄 Unit Converter</h2>
+
+            <select id="conversionType" onchange="updateConverter()">
+
+                <option value="length">
+                    Length
+                </option>
+
+                <option value="weight">
+                    Weight
+                </option>
+
+                <option value="temperature">
+                    Temperature
+                </option>
+
+                <option value="time">
+                    Time
+                </option>
+
+                <option value="data">
+                    Data
+                </option>
+
+            </select>
+
+
+            <div class="converter-input">
+
+                <input
+                    type="number"
+                    id="convertValue"
+                    placeholder="Enter value"
+                    oninput="convert()"
+                >
+
+            </div>
+
+
+            <div class="conversion-row">
+
+                <select id="fromUnit" onchange="convert()"></select>
+
+                <span>→</span>
+
+                <select id="toUnit" onchange="convert()"></select>
+
+            </div>
+
+
+            <div id="conversionResult" class="conversion-result">
+                Result will appear here
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+
+        <p>
+            Smart Calculator © 2026 | Built with HTML, CSS & JavaScript
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

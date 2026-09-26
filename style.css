@@ -1,0 +1,461 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0b1020;
+    --card: #151b30;
+    --card2: #1d2540;
+    --text: #ffffff;
+    --muted: #9da7c0;
+    --primary: #7c5cff;
+    --primary-dark: #6245d4;
+    --button: #252d49;
+    --danger: #d94b63;
+    --border: #303955;
+}
+
+body.light {
+    --bg: #f2f4fa;
+    --card: #ffffff;
+    --card2: #eef1f8;
+    --text: #172033;
+    --muted: #667085;
+    --primary: #6547e8;
+    --primary-dark: #5135c8;
+    --button: #e8ebf3;
+    --danger: #d83f57;
+    --border: #d8ddea;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    transition: 0.3s;
+}
+
+
+/* HEADER */
+
+.header {
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px 20px 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 30px;
+}
+
+.header p {
+    margin-top: 5px;
+    color: var(--muted);
+}
+
+.theme-btn {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 50%;
+
+    background: var(--card);
+    color: var(--text);
+
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+/* CLOCK */
+
+.clock {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 0 20px;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: var(--muted);
+    font-size: 14px;
+}
+
+
+/* TABS */
+
+.tabs {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 0 20px;
+
+    display: flex;
+    gap: 10px;
+}
+
+.tab {
+    border: none;
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    background: var(--card);
+    color: var(--muted);
+
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+
+/* SECTIONS */
+
+.section {
+    display: none;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px 40px;
+}
+
+.active-section {
+    display: block;
+}
+
+
+/* CALCULATOR */
+
+.calculator-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.calculator-card,
+.history-card,
+.tool-card,
+.converter-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+
+/* DISPLAY */
+
+.display-area {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+#historyDisplay {
+    height: 20px;
+    text-align: right;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+#display {
+    width: 100%;
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--text);
+
+    font-size: 35px;
+    text-align: right;
+}
+
+
+/* BUTTONS */
+
+button {
+    font-family: inherit;
+}
+
+.calculator-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.scientific-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.memory-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.angle-row {
+    margin-bottom: 8px;
+}
+
+.angle-row button {
+    padding: 7px 15px;
+    border-radius: 7px;
+    border: none;
+
+    background: var(--button);
+    color: var(--text);
+
+    cursor: pointer;
+}
+
+.calculator-grid button,
+.scientific-grid button,
+.memory-row button {
+    min-height: 50px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--button);
+    color: var(--text);
+
+    font-size: 16px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.calculator-grid button:hover,
+.scientific-grid button:hover,
+.memory-row button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+.operator {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+.equal {
+    background: #20a77a !important;
+    color: white !important;
+}
+
+.danger {
+    background: var(--danger) !important;
+    color: white !important;
+}
+
+
+/* HISTORY */
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+.history-header button {
+    background: transparent;
+    color: var(--danger);
+
+    border: none;
+    cursor: pointer;
+}
+
+.history-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.history-item:hover {
+    background: var(--card2);
+}
+
+.history-expression {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.history-result {
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+.empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 20px;
+}
+
+
+/* TOOLS */
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.tool-card h2,
+.converter-card h2 {
+    margin-bottom: 20px;
+}
+
+.big-display {
+    background: var(--card2);
+    border-radius: 12px;
+
+    text-align: center;
+    padding: 25px;
+
+    font-size: 35px;
+    margin-bottom: 20px;
+}
+
+.tool-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.tool-buttons button {
+    flex: 1;
+    padding: 12px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--primary);
+    color: white;
+
+    cursor: pointer;
+}
+
+.timer-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.timer-inputs input {
+    width: 50%;
+}
+
+
+/* CONVERTER */
+
+.converter-card {
+    max-width: 700px;
+    margin: auto;
+}
+
+.converter-card select,
+.converter-card input,
+.timer-inputs input {
+    width: 100%;
+    padding: 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--card2);
+    color: var(--text);
+
+    outline: none;
+}
+
+.converter-input {
+    margin: 15px 0;
+}
+
+.conversion-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.conversion-row select {
+    flex: 1;
+}
+
+.conversion-result {
+    margin-top: 20px;
+
+    background: var(--card2);
+
+    padding: 20px;
+    border-radius: 10px;
+
+    text-align: center;
+
+    font-size: 22px;
+}
+
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 20px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+
+    .calculator-container,
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .tabs {
+        overflow-x: auto;
+    }
+
+    #display {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .scientific-grid button {
+        font-size: 13px;
+    }
+
+    .calculator-grid button {
+        min-height: 45px;
+    }
+
+    .memory-row button {
+        font-size: 12px;
+    }
+
+    .clock {
+        font-size: 12px;
+    }
+}
