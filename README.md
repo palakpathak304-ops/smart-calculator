@@ -1,7 +1,7 @@
 # 🧮✨ Smart Calculator
 
 <p align="center">
-  <img src="images/calculator.png" alt="Smart Calculator" width="750">
+  <img src="images/Calculator.png" alt="Smart Calculator" width="750">
 </p>
 
 <p align="center">
