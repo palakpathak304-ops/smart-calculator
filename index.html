@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Smart Calculator</title>
 
     <link rel="stylesheet" href="style.css">
@@ -11,81 +10,430 @@
 
 <body>
 
-    <!-- Header -->
-    <header class="header">
-        <div>
-            <h1>Smart Calculator</h1>
-            <p>Calculator & Utility Hub</p>
+<!-- =========================
+     PROFESSIONAL OPENING PAGE
+========================= -->
+
+<section id="welcomePage" class="welcome-page">
+
+    <nav class="landing-nav">
+        <div class="brand">
+            <div class="brand-icon">🧮</div>
+            <span>SmartCalc</span>
         </div>
 
-        <button id="themeBtn" class="theme-btn" onclick="toggleTheme()">
-            🌙
-        </button>
-    </header>
-
-    <!-- Clock -->
-    <div class="clock">
-        <span id="date">Loading...</span>
-        <span id="time">Loading...</span>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="tabs">
-        <button class="tab active" onclick="showSection('calculator', this)">
-            🧮 Calculator
-        </button>
-
-        <button class="tab" onclick="showSection('tools', this)">
-            🛠 Tools
-        </button>
-
-        <button class="tab" onclick="showSection('converter', this)">
-            🔄 Converter
-        </button>
+        <div class="nav-badge">
+            Smart • Fast • Simple
+        </div>
     </nav>
 
 
-    <!-- ================= CALCULATOR ================= -->
+    <div class="hero">
 
-    <main id="calculator" class="section active-section">
+        <div class="hero-content">
 
-        <div class="calculator-container">
+            <div class="small-badge">
+                ✦ SMART CALCULATOR
+            </div>
+
+            <h1>
+                Calculate
+                <span>Smarter.</span>
+            </h1>
+
+            <p class="hero-text">
+                A modern all-in-one calculator designed for
+                everyday calculations, scientific functions,
+                conversions and productivity tools.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button class="open-btn" onclick="openCalculator()">
+                    Open Calculator
+                    <span>→</span>
+                </button>
+
+                <div class="secure-text">
+                    <span>●</span>
+                    Fast & Easy to Use
+                </div>
+
+            </div>
+
+
+            <div class="hero-stats">
+
+                <div>
+                    <strong>3+</strong>
+                    <span>Color Themes</span>
+                </div>
+
+                <div>
+                    <strong>10+</strong>
+                    <span>Smart Tools</span>
+                </div>
+
+                <div>
+                    <strong>100%</strong>
+                    <span>Responsive</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Mini Calculator Preview -->
+
+        <div class="hero-preview">
+
+            <div class="preview-glow"></div>
+
+            <div class="mini-calculator">
+
+                <div class="mini-top">
+                    <span>SmartCalc</span>
+                    <span>●</span>
+                </div>
+
+                <div class="mini-display">
+                    <small>Result</small>
+                    <strong>1,024</strong>
+                </div>
+
+                <div class="mini-buttons">
+
+                    <span>AC</span>
+                    <span>⌫</span>
+                    <span>%</span>
+                    <span>÷</span>
+
+                    <span>7</span>
+                    <span>8</span>
+                    <span>9</span>
+                    <span>×</span>
+
+                    <span>4</span>
+                    <span>5</span>
+                    <span>6</span>
+                    <span>−</span>
+
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>+</span>
+
+                    <span>0</span>
+                    <span>.</span>
+                    <span>=</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Opening Page Features -->
+
+    <div class="landing-features">
+
+        <div class="landing-feature">
+
+            <div class="landing-feature-icon">⚡</div>
+
+            <div>
+                <h3>Fast Calculations</h3>
+                <p>Perform calculations quickly and easily.</p>
+            </div>
+
+        </div>
+
+
+        <div class="landing-feature">
+
+            <div class="landing-feature-icon">🎨</div>
+
+            <div>
+                <h3>Custom Themes</h3>
+                <p>Choose a calculator color you like.</p>
+            </div>
+
+        </div>
+
+
+        <div class="landing-feature">
+
+            <div class="landing-feature-icon">🛠️</div>
+
+            <div>
+                <h3>Smart Tools</h3>
+                <p>Use converters, timers and more.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <footer class="landing-footer">
+        © 2026 SmartCalc • Built with HTML, CSS & JavaScript
+    </footer>
+
+</section>
+
+
+<!-- =========================
+     CALCULATOR APP
+========================= -->
+
+<section id="calculatorApp" class="calculator-app hidden">
+
+    <!-- Header -->
+
+    <header class="app-header">
+
+        <div>
+
+            <div class="app-logo">
+                🧮 SmartCalc
+            </div>
+
+            <div id="dateTime" class="date-time">
+                Loading...
+            </div>
+
+        </div>
+
+
+        <button class="back-btn" onclick="backToWelcome()">
+            ← Home
+        </button>
+
+    </header>
+
+
+    <!-- =========================
+         COLOR THEMES
+    ========================== -->
+
+    <section class="theme-section">
+
+        <h2>Choose Your Color</h2>
+
+        <div class="theme-options">
+
+            <button
+                class="theme-btn black-theme"
+                onclick="changeColor('black')">
+                🖤 Black
+            </button>
+
+            <button
+                class="theme-btn pink-theme"
+                onclick="changeColor('darkpink')">
+                🌸 Dark Pink
+            </button>
+
+            <button
+                class="theme-btn navy-theme"
+                onclick="changeColor('navy')">
+                🌌 Dark Navy
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         FEATURES
+    ========================== -->
+
+    <section class="features-section">
+
+        <div class="section-heading">
+
+            <span>POWERFUL FEATURES</span>
+
+            <h2>Everything You Need</h2>
+
+            <p>
+                More than just a calculator.
+            </p>
+
+        </div>
+
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div>➕</div>
+                <h3>Basic Calculator</h3>
+                <p>
+                    Addition, subtraction, multiplication,
+                    division and percentage.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div>📐</div>
+                <h3>Scientific Functions</h3>
+                <p>
+                    Trigonometry, square root, logarithm,
+                    powers and factorial.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div>🧠</div>
+                <h3>Memory</h3>
+                <p>
+                    Store, recall and clear calculator values.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div>🕘</div>
+                <h3>Calculation History</h3>
+                <p>
+                    Automatically save your previous calculations.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div>🔄</div>
+                <h3>Unit Converter</h3>
+                <p>
+                    Convert length, weight, temperature,
+                    time and data.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div>⏱️</div>
+                <h3>Productivity Tools</h3>
+                <p>
+                    Stopwatch and countdown timer included.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         NAVIGATION TABS
+    ========================== -->
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="showTab('calculatorTab', this)">
+            Calculator
+        </button>
+
+        <button
+            class="tab"
+            onclick="showTab('toolsTab', this)">
+            Tools
+        </button>
+
+        <button
+            class="tab"
+            onclick="showTab('converterTab', this)">
+            Converter
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         CALCULATOR TAB
+    ========================== -->
+
+    <div id="calculatorTab" class="tab-content active">
+
+        <div class="calculator-layout">
+
 
             <!-- Calculator -->
+
             <div class="calculator-card">
 
-                <div class="display-area">
+                <div class="calculator-top">
 
-                    <div id="historyDisplay"></div>
+                    <span>Calculator</span>
 
-                    <input
-                        type="text"
-                        id="display"
-                        placeholder="0"
-                        readonly
-                    >
+                    <button
+                        class="mode-btn"
+                        onclick="toggleDarkMode()">
+                        🌙
+                    </button>
 
                 </div>
 
-                <!-- Angle Mode -->
+
+                <!-- Display -->
+
+                <div class="display-box">
+
+                    <div id="expression">
+                        0
+                    </div>
+
+                    <div id="result">
+                        0
+                    </div>
+
+                </div>
+
+
+                <!-- DEG / RAD -->
+
                 <div class="angle-row">
-                    <button onclick="toggleAngle(this)" id="angleBtn">
+
+                    <button
+                        id="degreeBtn"
+                        class="angle-btn active"
+                        onclick="setAngleMode('DEG')">
                         DEG
                     </button>
+
+                    <button
+                        id="radianBtn"
+                        class="angle-btn"
+                        onclick="setAngleMode('RAD')">
+                        RAD
+                    </button>
+
                 </div>
 
+
                 <!-- Memory -->
+
                 <div class="memory-row">
 
                     <button onclick="memoryClear()">MC</button>
                     <button onclick="memoryRecall()">MR</button>
                     <button onclick="memoryAdd()">M+</button>
                     <button onclick="memorySubtract()">M-</button>
-                    <button onclick="memoryStore()">MS</button>
 
                 </div>
 
-                <!-- Scientific Buttons -->
+
+                <!-- Scientific -->
+
                 <div class="scientific-grid">
 
                     <button onclick="scientific('sin')">sin</button>
@@ -93,45 +441,82 @@
                     <button onclick="scientific('tan')">tan</button>
                     <button onclick="scientific('sqrt')">√</button>
 
-                    <button onclick="scientific('square')">x²</button>
                     <button onclick="scientific('log')">log</button>
                     <button onclick="scientific('ln')">ln</button>
-                    <button onclick="scientific('factorial')">x!</button>
+                    <button onclick="scientific('square')">x²</button>
+                    <button onclick="scientific('power')">xʸ</button>
 
-                    <button onclick="insertValue('Math.PI')">π</button>
-                    <button onclick="insertValue('Math.E')">e</button>
+                    <button onclick="scientific('pi')">π</button>
+                    <button onclick="scientific('e')">e</button>
+                    <button onclick="scientific('factorial')">x!</button>
                     <button onclick="scientific('inverse')">1/x</button>
-                    <button onclick="insertValue('**')">xʸ</button>
 
                 </div>
 
-                <!-- Main Calculator -->
-                <div class="calculator-grid">
 
-                    <button class="danger" onclick="clearDisplay()">AC</button>
-                    <button onclick="deleteLast()">⌫</button>
-                    <button onclick="insertValue('(')">(</button>
-                    <button onclick="insertValue(')')">)</button>
+                <!-- Main Calculator -->
+
+                <div class="main-grid">
+
+                    <button class="clear" onclick="clearDisplay()">
+                        AC
+                    </button>
+
+                    <button onclick="deleteLast()">
+                        ⌫
+                    </button>
+
+                    <button onclick="insertValue('%')">
+                        %
+                    </button>
+
+                    <button class="operator" onclick="insertValue('/')">
+                        ÷
+                    </button>
+
 
                     <button onclick="insertValue('7')">7</button>
                     <button onclick="insertValue('8')">8</button>
                     <button onclick="insertValue('9')">9</button>
-                    <button class="operator" onclick="insertValue('/')">÷</button>
+
+                    <button class="operator" onclick="insertValue('*')">
+                        ×
+                    </button>
+
 
                     <button onclick="insertValue('4')">4</button>
                     <button onclick="insertValue('5')">5</button>
                     <button onclick="insertValue('6')">6</button>
-                    <button class="operator" onclick="insertValue('*')">×</button>
+
+                    <button class="operator" onclick="insertValue('-')">
+                        −
+                    </button>
+
 
                     <button onclick="insertValue('1')">1</button>
                     <button onclick="insertValue('2')">2</button>
                     <button onclick="insertValue('3')">3</button>
-                    <button class="operator" onclick="insertValue('-')">−</button>
 
-                    <button onclick="insertValue('0')">0</button>
-                    <button onclick="insertValue('.')">.</button>
-                    <button class="equal" onclick="calculate()">=</button>
-                    <button class="operator" onclick="insertValue('+')">+</button>
+                    <button class="operator" onclick="insertValue('+')">
+                        +
+                    </button>
+
+
+                    <button
+                        class="zero"
+                        onclick="insertValue('0')">
+                        0
+                    </button>
+
+                    <button onclick="insertValue('.')">
+                        .
+                    </button>
+
+                    <button
+                        class="equal"
+                        onclick="calculate()">
+                        =
+                    </button>
 
                 </div>
 
@@ -139,45 +524,53 @@
 
 
             <!-- History -->
-            <div class="history-card">
+
+            <aside class="history-card">
 
                 <div class="history-header">
-                    <h2>History</h2>
+
+                    <h3>History</h3>
 
                     <button onclick="clearHistory()">
                         Clear
                     </button>
+
                 </div>
 
-                <div id="historyList">
-                    <p class="empty">
+                <div id="historyList" class="history-list">
+                    <p class="empty-history">
                         No calculations yet.
                     </p>
                 </div>
 
-            </div>
+            </aside>
 
         </div>
 
-    </main>
+    </div>
 
 
-    <!-- ================= TOOLS ================= -->
+    <!-- =========================
+         TOOLS TAB
+    ========================== -->
 
-    <section id="tools" class="section">
+    <div id="toolsTab" class="tab-content">
 
         <div class="tools-grid">
 
+
             <!-- Stopwatch -->
+
             <div class="tool-card">
 
-                <h2>⏱ Stopwatch</h2>
+                <h2>⏱️ Stopwatch</h2>
 
-                <div id="stopwatchDisplay" class="big-display">
+                <div id="stopwatchDisplay"
+                     class="timer-display">
                     00:00:00
                 </div>
 
-                <div class="tool-buttons">
+                <div class="timer-buttons">
 
                     <button onclick="startStopwatch()">
                         Start
@@ -197,34 +590,36 @@
 
 
             <!-- Countdown -->
+
             <div class="tool-card">
 
                 <h2>⏳ Countdown Timer</h2>
 
-                <div class="timer-inputs">
+                <div class="countdown-inputs">
 
                     <input
+                        id="countdownMinutes"
                         type="number"
-                        id="minutesInput"
                         placeholder="Minutes"
-                        min="0"
-                    >
+                        min="0">
 
                     <input
+                        id="countdownSeconds"
                         type="number"
-                        id="secondsInput"
                         placeholder="Seconds"
                         min="0"
-                        max="59"
-                    >
+                        max="59">
 
                 </div>
 
-                <div id="countdownDisplay" class="big-display">
+
+                <div id="countdownDisplay"
+                     class="timer-display">
                     00:00
                 </div>
 
-                <div class="tool-buttons">
+
+                <div class="timer-buttons">
 
                     <button onclick="startCountdown()">
                         Start
@@ -244,18 +639,22 @@
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- ================= CONVERTER ================= -->
+    <!-- =========================
+         CONVERTER TAB
+    ========================== -->
 
-    <section id="converter" class="section">
+    <div id="converterTab" class="tab-content">
 
         <div class="converter-card">
 
             <h2>🔄 Unit Converter</h2>
 
-            <select id="conversionType" onchange="updateConverter()">
+            <select
+                id="conversionType"
+                onchange="updateConverter()">
 
                 <option value="length">
                     Length
@@ -280,48 +679,70 @@
             </select>
 
 
-            <div class="converter-input">
+            <div class="converter-inputs">
 
-                <input
-                    type="number"
-                    id="convertValue"
-                    placeholder="Enter value"
-                    oninput="convert()"
-                >
+                <div>
 
-            </div>
+                    <label>From</label>
 
+                    <input
+                        id="fromValue"
+                        type="number"
+                        placeholder="Enter value"
+                        oninput="convertUnit()">
 
-            <div class="conversion-row">
+                    <select id="fromUnit"
+                            onchange="convertUnit()">
+                    </select>
 
-                <select id="fromUnit" onchange="convert()"></select>
-
-                <span>→</span>
-
-                <select id="toUnit" onchange="convert()"></select>
-
-            </div>
+                </div>
 
 
-            <div id="conversionResult" class="conversion-result">
-                Result will appear here
+                <div class="swap-icon">
+                    ⇄
+                </div>
+
+
+                <div>
+
+                    <label>To</label>
+
+                    <input
+                        id="toValue"
+                        type="number"
+                        readonly>
+
+                    <select id="toUnit"
+                            onchange="convertUnit()">
+                    </select>
+
+                </div>
+
             </div>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <footer>
+    <!-- Footer -->
+
+    <footer class="app-footer">
 
         <p>
-            Smart Calculator © 2026 | Built with HTML, CSS & JavaScript
+            SmartCalc © 2026
+        </p>
+
+        <p>
+            Built with HTML • CSS • JavaScript
         </p>
 
     </footer>
 
+</section>
 
-    <script src="script.js"></script>
+
+<script src="script.js"></script>
 
 </body>
 </html>
