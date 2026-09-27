@@ -1,339 +1,424 @@
-/* =========================
-   GLOBAL VARIABLES
-========================= */
+/* =====================================
+   OPEN / CLOSE CALCULATOR
+===================================== */
 
-let display = document.getElementById("display");
+function openCalculator() {
+
+    document
+        .getElementById("welcomePage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("calculatorApp")
+        .classList.remove("hidden");
+
+    window.scrollTo(0, 0);
+}
+
+
+function backToWelcome() {
+
+    document
+        .getElementById("calculatorApp")
+        .classList.add("hidden");
+
+    document
+        .getElementById("welcomePage")
+        .classList.remove("hidden");
+
+    window.scrollTo(0, 0);
+}
+
+
+/* =====================================
+   CALCULATOR VARIABLES
+===================================== */
+
+let expression = "";
 
 let memory = 0;
 
 let angleMode = "DEG";
 
-let calculationHistory =
-    JSON.parse(localStorage.getItem("calculatorHistory")) || [];
+let history =
+    JSON.parse(
+        localStorage.getItem("calculatorHistory")
+    ) || [];
 
 
-/* =========================
-   CLOCK
-========================= */
+/* =====================================
+   DISPLAY
+===================================== */
 
-function updateClock() {
+function updateDisplay() {
 
-    const now = new Date();
-
-    document.getElementById("date").textContent =
-        now.toLocaleDateString("en-IN", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-
-    document.getElementById("time").textContent =
-        now.toLocaleTimeString();
+    document.getElementById("expression")
+        .textContent =
+        expression || "0";
 
 }
 
-setInterval(updateClock, 1000);
 
-updateClock();
-
-
-/* =========================
-   TABS
-========================= */
-
-function showSection(sectionId, button) {
-
-    document.querySelectorAll(".section").forEach(section => {
-        section.classList.remove("active-section");
-    });
-
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.remove("active");
-    });
-
-    document.getElementById(sectionId)
-        .classList.add("active-section");
-
-    button.classList.add("active");
-}
-
-
-/* =========================
-   THEME
-========================= */
-
-function toggleTheme() {
-
-    document.body.classList.toggle("light");
-
-    const button = document.getElementById("themeBtn");
-
-    if (document.body.classList.contains("light")) {
-        button.textContent = "☀️";
-        localStorage.setItem("theme", "light");
-    } else {
-        button.textContent = "🌙";
-        localStorage.setItem("theme", "dark");
-    }
-}
-
-if (localStorage.getItem("theme") === "light") {
-
-    document.body.classList.add("light");
-
-    document.getElementById("themeBtn").textContent = "☀️";
-}
-
-
-/* =========================
-   CALCULATOR
-========================= */
+/* =====================================
+   INSERT VALUE
+===================================== */
 
 function insertValue(value) {
 
-    if (display.value === "Error") {
-        display.value = "";
-    }
+    expression += value;
 
-    display.value += value;
+    updateDisplay();
 }
 
+
+/* =====================================
+   CLEAR
+===================================== */
 
 function clearDisplay() {
 
-    display.value = "";
+    expression = "";
 
-    document.getElementById("historyDisplay")
-        .textContent = "";
+    document.getElementById("result")
+        .textContent = "0";
+
+    updateDisplay();
 }
 
+
+/* =====================================
+   DELETE
+===================================== */
 
 function deleteLast() {
 
-    display.value = display.value.slice(0, -1);
+    expression =
+        expression.slice(0, -1);
+
+    updateDisplay();
 }
 
+
+/* =====================================
+   CALCULATE
+===================================== */
 
 function calculate() {
 
-    if (!display.value) return;
+    if (!expression) return;
 
     try {
 
-        let expression = display.value;
+        let cleanExpression =
+            expression
+                .replace(/π/g, "Math.PI")
+                .replace(/\be\b/g, "Math.E")
+                .replace(/%/g, "/100");
+
 
         /*
-            Replace symbols for JavaScript
-        */
+         * Allow only calculator-safe
+         * characters and Math functions.
+         */
 
-        expression = expression
-            .replace(/÷/g, "/")
-            .replace(/×/g, "*")
-            .replace(/−/g, "-");
-
-        /*
-            Allow only safe calculator characters
-        */
-
-        if (!/^[0-9+\-*/().\sMathPIE]+$/.test(expression)) {
+        if (
+            !/^[0-9+\-*/().\sA-Za-z]+$/
+                .test(cleanExpression)
+        ) {
             throw new Error("Invalid");
         }
 
-        let result = Function(
-            '"use strict"; return (' + expression + ')'
-        )();
 
-        if (!Number.isFinite(result)) {
+        /*
+         * Only allow known Math names.
+         */
+
+        const allowed =
+            /^(?:(?:Math\.(?:PI|E|sqrt|sin|cos|tan|log|pow|abs))|[0-9+\-*/().\s])+$|^[0-9+\-*/().\sMath]+$/;
+
+
+        if (!allowed.test(cleanExpression)) {
             throw new Error("Invalid");
         }
 
-        document.getElementById("historyDisplay")
-            .textContent = display.value + " =";
 
-        display.value = formatNumber(result);
+        let result =
+            Function(
+                '"use strict"; return (' +
+                cleanExpression +
+                ')'
+            )();
+
+
+        if (
+            typeof result !== "number" ||
+            !isFinite(result)
+        ) {
+            throw new Error("Invalid");
+        }
+
+
+        result =
+            Number(
+                result.toFixed(10)
+            );
+
+
+        document.getElementById("result")
+            .textContent = result;
+
 
         addHistory(
-            document.getElementById("historyDisplay").textContent,
+            expression,
             result
         );
 
-    } catch {
+    }
 
-        display.value = "Error";
+    catch {
+
+        document.getElementById("result")
+            .textContent = "Error";
+
     }
 }
 
 
-function formatNumber(number) {
-
-    if (Number.isInteger(number)) {
-        return number.toString();
-    }
-
-    return parseFloat(number.toFixed(10)).toString();
-}
-
-
-/* =========================
-   SCIENTIFIC CALCULATOR
-========================= */
+/* =====================================
+   SCIENTIFIC FUNCTIONS
+===================================== */
 
 function scientific(type) {
 
-    let value = parseFloat(display.value);
-
-    if (isNaN(value)) return;
-
-    let result;
-
     try {
+
+        let value =
+            parseFloat(
+                document
+                    .getElementById("result")
+                    .textContent
+            );
+
+
+        if (
+            isNaN(value) &&
+            type !== "pi" &&
+            type !== "e"
+        ) {
+            value = 0;
+        }
+
 
         switch (type) {
 
             case "sin":
 
-                result = Math.sin(
+                value =
                     angleMode === "DEG"
-                        ? value * Math.PI / 180
-                        : value
-                );
+                        ? Math.sin(
+                            value *
+                            Math.PI /
+                            180
+                        )
+                        : Math.sin(value);
 
                 break;
 
 
             case "cos":
 
-                result = Math.cos(
+                value =
                     angleMode === "DEG"
-                        ? value * Math.PI / 180
-                        : value
-                );
+                        ? Math.cos(
+                            value *
+                            Math.PI /
+                            180
+                        )
+                        : Math.cos(value);
 
                 break;
 
 
             case "tan":
 
-                result = Math.tan(
+                value =
                     angleMode === "DEG"
-                        ? value * Math.PI / 180
-                        : value
-                );
+                        ? Math.tan(
+                            value *
+                            Math.PI /
+                            180
+                        )
+                        : Math.tan(value);
 
                 break;
 
 
             case "sqrt":
 
-                result = Math.sqrt(value);
-
-                break;
-
-
-            case "square":
-
-                result = value * value;
+                value = Math.sqrt(value);
 
                 break;
 
 
             case "log":
 
-                result = Math.log10(value);
+                value = Math.log10(value);
 
                 break;
 
 
             case "ln":
 
-                result = Math.log(value);
+                value = Math.log(value);
+
+                break;
+
+
+            case "square":
+
+                value = value * value;
+
+                break;
+
+
+            case "power":
+
+                expression += "**";
+
+                updateDisplay();
+
+                return;
+
+
+            case "pi":
+
+                insertValue("π");
+
+                return;
+
+
+            case "e":
+
+                insertValue("e");
+
+                return;
+
+
+            case "factorial":
+
+                value = factorial(value);
 
                 break;
 
 
             case "inverse":
 
-                result = 1 / value;
-
-                break;
-
-
-            case "factorial":
-
-                if (value < 0 || !Number.isInteger(value)) {
-                    throw new Error();
-                }
-
-                result = factorial(value);
+                value = 1 / value;
 
                 break;
 
         }
 
-        if (!Number.isFinite(result)) {
-            throw new Error();
-        }
 
-        display.value = formatNumber(result);
+        value =
+            Number(
+                value.toFixed(10)
+            );
 
-    } catch {
 
-        display.value = "Error";
+        document.getElementById("result")
+            .textContent = value;
+
+
+        addHistory(
+            type +
+            "(" +
+            document.getElementById("result")
+                .textContent +
+            ")",
+            value
+        );
+
+    }
+
+    catch {
+
+        document.getElementById("result")
+            .textContent = "Error";
+
     }
 }
 
 
-function factorial(number) {
+/* =====================================
+   FACTORIAL
+===================================== */
 
-    if (number === 0 || number === 1) {
+function factorial(n) {
+
+    n = Math.floor(n);
+
+    if (n < 0) {
+        throw new Error("Invalid");
+    }
+
+    if (n === 0 || n === 1) {
         return 1;
     }
 
-    let result = 1;
+    let answer = 1;
 
-    for (let i = 2; i <= number; i++) {
-        result *= i;
+    for (
+        let i = 2;
+        i <= n;
+        i++
+    ) {
+        answer *= i;
     }
 
-    return result;
+    return answer;
 }
 
 
-/* =========================
+/* =====================================
    ANGLE MODE
-========================= */
+===================================== */
 
-function toggleAngle(button) {
+function setAngleMode(mode) {
 
-    angleMode =
-        angleMode === "DEG"
-            ? "RAD"
-            : "DEG";
-
-    button.textContent = angleMode;
-}
+    angleMode = mode;
 
 
-/* =========================
-   MEMORY
-========================= */
+    document
+        .getElementById("degreeBtn")
+        .classList.remove("active");
 
-function memoryStore() {
 
-    let value = parseFloat(display.value);
+    document
+        .getElementById("radianBtn")
+        .classList.remove("active");
 
-    if (!isNaN(value)) {
-        memory = value;
+
+    if (mode === "DEG") {
+
+        document
+            .getElementById("degreeBtn")
+            .classList.add("active");
+
+    } else {
+
+        document
+            .getElementById("radianBtn")
+            .classList.add("active");
+
     }
+
 }
 
 
-function memoryRecall() {
-
-    display.value = memory;
-}
-
+/* =====================================
+   MEMORY
+===================================== */
 
 function memoryClear() {
 
@@ -341,154 +426,507 @@ function memoryClear() {
 }
 
 
+function memoryRecall() {
+
+    insertValue(
+        String(memory)
+    );
+}
+
+
 function memoryAdd() {
 
-    let value = parseFloat(display.value);
+    const value =
+        parseFloat(
+            document
+                .getElementById("result")
+                .textContent
+        );
 
     if (!isNaN(value)) {
+
         memory += value;
+
     }
 }
 
 
 function memorySubtract() {
 
-    let value = parseFloat(display.value);
+    const value =
+        parseFloat(
+            document
+                .getElementById("result")
+                .textContent
+        );
 
     if (!isNaN(value)) {
+
         memory -= value;
+
     }
 }
 
 
-/* =========================
+/* =====================================
    HISTORY
-========================= */
+===================================== */
 
-function addHistory(expression, result) {
+function addHistory(
+    expressionText,
+    result
+) {
 
-    calculationHistory.unshift({
-        expression: expression,
-        result: result
+    history.unshift({
+
+        expression:
+            expressionText,
+
+        result:
+            result
+
     });
 
-    calculationHistory =
-        calculationHistory.slice(0, 20);
+
+    if (history.length > 30) {
+
+        history =
+            history.slice(0, 30);
+
+    }
+
 
     localStorage.setItem(
         "calculatorHistory",
-        JSON.stringify(calculationHistory)
+        JSON.stringify(history)
     );
 
-    renderHistory();
+
+    displayHistory();
 }
 
 
-function renderHistory() {
+function displayHistory() {
 
-    const historyList =
-        document.getElementById("historyList");
+    const list =
+        document.getElementById(
+            "historyList"
+        );
 
-    if (calculationHistory.length === 0) {
 
-        historyList.innerHTML =
-            '<p class="empty">No calculations yet.</p>';
+    if (history.length === 0) {
+
+        list.innerHTML =
+            `<p class="empty-history">
+                No calculations yet.
+            </p>`;
 
         return;
     }
 
-    historyList.innerHTML = "";
 
-    calculationHistory.forEach(item => {
+    list.innerHTML =
+        history.map(
+            (item, index) => `
 
-        const div =
-            document.createElement("div");
+                <div
+                    class="history-item"
+                    onclick="useHistory(${index})"
+                >
 
-        div.className = "history-item";
+                    <div class="history-expression">
+                        ${item.expression}
+                    </div>
 
-        div.innerHTML = `
-            <div class="history-expression">
-                ${item.expression}
-            </div>
+                    <div class="history-result">
+                        = ${item.result}
+                    </div>
 
-            <div class="history-result">
-                ${item.result}
-            </div>
-        `;
+                </div>
 
-        div.onclick = function () {
-            display.value = item.result;
-        };
+            `
+        ).join("");
+}
 
-        historyList.appendChild(div);
 
-    });
+function useHistory(index) {
+
+    expression =
+        String(
+            history[index].result
+        );
+
+    document.getElementById("result")
+        .textContent =
+        history[index].result;
+
+    updateDisplay();
 }
 
 
 function clearHistory() {
 
-    calculationHistory = [];
+    history = [];
 
-    localStorage.removeItem("calculatorHistory");
+    localStorage.removeItem(
+        "calculatorHistory"
+    );
 
-    renderHistory();
+    displayHistory();
 }
 
-renderHistory();
+
+/* =====================================
+   TABS
+===================================== */
+
+function showTab(
+    tabId,
+    button
+) {
+
+    document
+        .querySelectorAll(".tab-content")
+        .forEach(
+            tab => tab.classList.remove("active")
+        );
 
 
-/* =========================
+    document
+        .querySelectorAll(".tab")
+        .forEach(
+            btn => btn.classList.remove("active")
+        );
+
+
+    document
+        .getElementById(tabId)
+        .classList.add("active");
+
+
+    button.classList.add("active");
+}
+
+
+/* =====================================
+   DATE & TIME
+===================================== */
+
+function updateDateTime() {
+
+    const now =
+        new Date();
+
+
+    const date =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    const time =
+        now.toLocaleTimeString(
+            "en-IN"
+        );
+
+
+    document.getElementById("dateTime")
+        .textContent =
+        date + " • " + time;
+}
+
+
+setInterval(
+    updateDateTime,
+    1000
+);
+
+updateDateTime();
+
+
+/* =====================================
+   THEMES
+===================================== */
+
+function changeColor(theme) {
+
+    const root =
+        document.documentElement;
+
+
+    const themes = {
+
+        black: {
+
+            accent: "#eeeeee",
+
+            accentDark: "#ffffff",
+
+            accentLight: "#363636",
+
+            body: "#111111",
+
+            card: "#1b1b1b",
+
+            text: "#f5f5f5",
+
+            muted: "#a0a0a0",
+
+            border: "#3a3a3a",
+
+            button: "#292929",
+
+            operator: "#3a3a3a"
+
+        },
+
+
+        darkpink: {
+
+            accent: "#d94f86",
+
+            accentDark: "#a52e61",
+
+            accentLight: "#6e2949",
+
+            body: "#24121b",
+
+            card: "#301823",
+
+            text: "#fff1f6",
+
+            muted: "#c49aaa",
+
+            border: "#5b3044",
+
+            button: "#432331",
+
+            operator: "#5a2c41"
+
+        },
+
+
+        navy: {
+
+            accent: "#4f83d1",
+
+            accentDark: "#8fb9ff",
+
+            accentLight: "#29466f",
+
+            body: "#0e1726",
+
+            card: "#172238",
+
+            text: "#edf4ff",
+
+            muted: "#9caec8",
+
+            border: "#304562",
+
+            button: "#22324b",
+
+            operator: "#2d4769"
+
+        }
+
+    };
+
+
+    const selected =
+        themes[theme];
+
+
+    if (!selected) return;
+
+
+    root.style.setProperty(
+        "--accent",
+        selected.accent
+    );
+
+
+    root.style.setProperty(
+        "--accent-dark",
+        selected.accentDark
+    );
+
+
+    root.style.setProperty(
+        "--accent-light",
+        selected.accentLight
+    );
+
+
+    root.style.setProperty(
+        "--body-bg",
+        selected.body
+    );
+
+
+    root.style.setProperty(
+        "--card-bg",
+        selected.card
+    );
+
+
+    root.style.setProperty(
+        "--text",
+        selected.text
+    );
+
+
+    root.style.setProperty(
+        "--muted",
+        selected.muted
+    );
+
+
+    root.style.setProperty(
+        "--border",
+        selected.border
+    );
+
+
+    root.style.setProperty(
+        "--button-bg",
+        selected.button
+    );
+
+
+    root.style.setProperty(
+        "--operator-bg",
+        selected.operator
+    );
+
+
+    localStorage.setItem(
+        "calculatorTheme",
+        theme
+    );
+}
+
+
+/* Load saved theme */
+
+const savedTheme =
+    localStorage.getItem(
+        "calculatorTheme"
+    ) || "navy";
+
+
+changeColor(savedTheme);
+
+
+/* =====================================
+   DARK MODE
+===================================== */
+
+function toggleDarkMode() {
+
+    document.body
+        .classList.toggle("dark-mode");
+
+
+    localStorage.setItem(
+        "calculatorDarkMode",
+        document.body.classList.contains(
+            "dark-mode"
+        )
+    );
+
+}
+
+
+/* Load dark mode */
+
+if (
+    localStorage.getItem(
+        "calculatorDarkMode"
+    ) === "true"
+) {
+
+    document.body.classList.add(
+        "dark-mode"
+    );
+
+}
+
+
+/* =====================================
    STOPWATCH
-========================= */
+===================================== */
 
-let stopwatchInterval;
+let stopwatchInterval = null;
 
 let stopwatchSeconds = 0;
 
-let stopwatchRunning = false;
+
+function updateStopwatch() {
+
+    const hours =
+        Math.floor(
+            stopwatchSeconds / 3600
+        );
 
 
-function updateStopwatchDisplay() {
+    const minutes =
+        Math.floor(
+            (stopwatchSeconds % 3600) /
+            60
+        );
 
-    let hours =
-        Math.floor(stopwatchSeconds / 3600);
 
-    let minutes =
-        Math.floor((stopwatchSeconds % 3600) / 60);
-
-    let seconds =
+    const seconds =
         stopwatchSeconds % 60;
 
-    document.getElementById("stopwatchDisplay")
-        .textContent =
-        String(hours).padStart(2, "0") + ":" +
-        String(minutes).padStart(2, "0") + ":" +
+
+    document.getElementById(
+        "stopwatchDisplay"
+    ).textContent =
+
+        String(hours).padStart(2, "0")
+        + ":" +
+
+        String(minutes).padStart(2, "0")
+        + ":" +
+
         String(seconds).padStart(2, "0");
 }
 
 
 function startStopwatch() {
 
-    if (stopwatchRunning) return;
+    if (stopwatchInterval) return;
 
-    stopwatchRunning = true;
 
-    stopwatchInterval = setInterval(() => {
+    stopwatchInterval =
+        setInterval(
+            () => {
 
-        stopwatchSeconds++;
+                stopwatchSeconds++;
 
-        updateStopwatchDisplay();
+                updateStopwatch();
 
-    }, 1000);
+            },
+            1000
+        );
 }
 
 
 function stopStopwatch() {
 
-    stopwatchRunning = false;
+    clearInterval(
+        stopwatchInterval
+    );
 
-    clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
 }
 
 
@@ -498,67 +936,116 @@ function resetStopwatch() {
 
     stopwatchSeconds = 0;
 
-    updateStopwatchDisplay();
+    updateStopwatch();
 }
 
 
-/* =========================
-   COUNTDOWN TIMER
-========================= */
+/* =====================================
+   COUNTDOWN
+===================================== */
 
-let countdownInterval;
+let countdownInterval = null;
 
 let countdownSeconds = 0;
+
+
+function updateCountdown() {
+
+    const minutes =
+        Math.floor(
+            countdownSeconds / 60
+        );
+
+
+    const seconds =
+        countdownSeconds % 60;
+
+
+    document.getElementById(
+        "countdownDisplay"
+    ).textContent =
+
+        String(minutes).padStart(2, "0")
+        + ":" +
+
+        String(seconds).padStart(2, "0");
+}
 
 
 function startCountdown() {
 
     if (countdownInterval) return;
 
+
     const minutes =
         parseInt(
-            document.getElementById("minutesInput").value
+            document.getElementById(
+                "countdownMinutes"
+            ).value
         ) || 0;
+
 
     const seconds =
         parseInt(
-            document.getElementById("secondsInput").value
+            document.getElementById(
+                "countdownSeconds"
+            ).value
         ) || 0;
+
+
+    if (
+        countdownSeconds === 0
+    ) {
+
+        countdownSeconds =
+            minutes * 60 +
+            seconds;
+
+    }
+
 
     if (countdownSeconds <= 0) {
 
-        countdownSeconds =
-            minutes * 60 + seconds;
+        return;
+
     }
 
-    if (countdownSeconds <= 0) return;
 
-    updateCountdownDisplay();
+    updateCountdown();
+
 
     countdownInterval =
-        setInterval(() => {
+        setInterval(
+            () => {
 
-            countdownSeconds--;
+                countdownSeconds--;
 
-            updateCountdownDisplay();
+                updateCountdown();
 
-            if (countdownSeconds <= 0) {
 
-                clearInterval(countdownInterval);
+                if (
+                    countdownSeconds <= 0
+                ) {
 
-                countdownInterval = null;
+                    stopCountdown();
 
-                alert("⏰ Time's up!");
+                    alert(
+                        "⏰ Time's up!"
+                    );
 
-            }
+                }
 
-        }, 1000);
+            },
+            1000
+        );
 }
 
 
 function stopCountdown() {
 
-    clearInterval(countdownInterval);
+    clearInterval(
+        countdownInterval
+    );
 
     countdownInterval = null;
 }
@@ -570,72 +1057,61 @@ function resetCountdown() {
 
     countdownSeconds = 0;
 
-    updateCountdownDisplay();
+    document.getElementById(
+        "countdownMinutes"
+    ).value = "";
+
+    document.getElementById(
+        "countdownSeconds"
+    ).value = "";
+
+    updateCountdown();
 }
 
 
-function updateCountdownDisplay() {
-
-    const minutes =
-        Math.floor(countdownSeconds / 60);
-
-    const seconds =
-        countdownSeconds % 60;
-
-    document.getElementById("countdownDisplay")
-        .textContent =
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0");
-}
-
-
-/* =========================
+/* =====================================
    UNIT CONVERTER
-========================= */
+===================================== */
 
-const units = {
+const conversionUnits = {
 
-    length: {
+    length: [
+        "Meter",
+        "Kilometer",
+        "Centimeter",
+        "Millimeter",
+        "Mile",
+        "Foot",
+        "Inch"
+    ],
 
-        meter: 1,
-        kilometer: 1000,
-        centimeter: 0.01,
-        millimeter: 0.001,
-        mile: 1609.344,
-        yard: 0.9144,
-        foot: 0.3048,
-        inch: 0.0254
+    weight: [
+        "Kilogram",
+        "Gram",
+        "Milligram",
+        "Pound",
+        "Ounce"
+    ],
 
-    },
+    temperature: [
+        "Celsius",
+        "Fahrenheit",
+        "Kelvin"
+    ],
 
-    weight: {
+    time: [
+        "Second",
+        "Minute",
+        "Hour",
+        "Day"
+    ],
 
-        kilogram: 1,
-        gram: 0.001,
-        milligram: 0.000001,
-        pound: 0.45359237,
-        ounce: 0.0283495
-
-    },
-
-    time: {
-
-        second: 1,
-        minute: 60,
-        hour: 3600,
-        day: 86400
-
-    },
-
-    data: {
-
-        byte: 1,
-        kilobyte: 1024,
-        megabyte: 1024 ** 2,
-        gigabyte: 1024 ** 3
-
-    }
+    data: [
+        "Byte",
+        "Kilobyte",
+        "Megabyte",
+        "Gigabyte"
+    ]
 
 };
 
@@ -643,32 +1119,36 @@ const units = {
 function updateConverter() {
 
     const type =
-        document.getElementById("conversionType").value;
+        document.getElementById(
+            "conversionType"
+        ).value;
+
 
     const from =
-        document.getElementById("fromUnit");
+        document.getElementById(
+            "fromUnit"
+        );
+
 
     const to =
-        document.getElementById("toUnit");
+        document.getElementById(
+            "toUnit"
+        );
+
 
     from.innerHTML = "";
+
     to.innerHTML = "";
 
 
-    if (type === "temperature") {
-
-        const temperatureUnits = [
-            "Celsius",
-            "Fahrenheit",
-            "Kelvin"
-        ];
-
-        temperatureUnits.forEach(unit => {
+    conversionUnits[type]
+        .forEach(unit => {
 
             from.innerHTML +=
                 `<option value="${unit}">
                     ${unit}
                 </option>`;
+
 
             to.innerHTML +=
                 `<option value="${unit}">
@@ -677,161 +1157,289 @@ function updateConverter() {
 
         });
 
-    } else {
 
-        Object.keys(units[type]).forEach(unit => {
-
-            from.innerHTML +=
-                `<option value="${unit}">
-                    ${unit}
-                </option>`;
-
-            to.innerHTML +=
-                `<option value="${unit}">
-                    ${unit}
-                </option>`;
-
-        });
-
-    }
-
-    convert();
+    convertUnit();
 }
 
 
-function convert() {
+function convertUnit() {
 
     const type =
-        document.getElementById("conversionType").value;
+        document.getElementById(
+            "conversionType"
+        ).value;
+
 
     const value =
         parseFloat(
-            document.getElementById("convertValue").value
+            document.getElementById(
+                "fromValue"
+            ).value
         );
-
-    const from =
-        document.getElementById("fromUnit").value;
-
-    const to =
-        document.getElementById("toUnit").value;
-
-    const result =
-        document.getElementById("conversionResult");
 
 
     if (isNaN(value)) {
 
-        result.textContent =
-            "Result will appear here";
+        document.getElementById(
+            "toValue"
+        ).value = "";
 
         return;
     }
 
 
-    let converted;
+    const from =
+        document.getElementById(
+            "fromUnit"
+        ).value;
 
 
-    if (type === "temperature") {
+    const to =
+        document.getElementById(
+            "toUnit"
+        ).value;
 
-        converted =
-            convertTemperature(value, from, to);
 
-    } else {
+    let result;
 
-        converted =
+
+    if (type === "length") {
+
+        const factors = {
+
+            Meter: 1,
+
+            Kilometer: 1000,
+
+            Centimeter: 0.01,
+
+            Millimeter: 0.001,
+
+            Mile: 1609.344,
+
+            Foot: 0.3048,
+
+            Inch: 0.0254
+
+        };
+
+
+        result =
             value *
-            units[type][from] /
-            units[type][to];
+            factors[from] /
+            factors[to];
 
     }
 
 
-    result.textContent =
-        `${formatNumber(converted)} ${to}`;
+    else if (type === "weight") {
+
+        const factors = {
+
+            Kilogram: 1,
+
+            Gram: 0.001,
+
+            Milligram: 0.000001,
+
+            Pound: 0.453592,
+
+            Ounce: 0.0283495
+
+        };
+
+
+        result =
+            value *
+            factors[from] /
+            factors[to];
+
+    }
+
+
+    else if (
+        type === "temperature"
+    ) {
+
+        let celsius;
+
+
+        if (from === "Celsius") {
+
+            celsius = value;
+
+        }
+
+        else if (
+            from === "Fahrenheit"
+        ) {
+
+            celsius =
+                (value - 32) *
+                5 / 9;
+
+        }
+
+        else {
+
+            celsius =
+                value - 273.15;
+
+        }
+
+
+        if (to === "Celsius") {
+
+            result = celsius;
+
+        }
+
+        else if (
+            to === "Fahrenheit"
+        ) {
+
+            result =
+                celsius * 9 / 5 + 32;
+
+        }
+
+        else {
+
+            result =
+                celsius + 273.15;
+
+        }
+
+    }
+
+
+    else if (type === "time") {
+
+        const factors = {
+
+            Second: 1,
+
+            Minute: 60,
+
+            Hour: 3600,
+
+            Day: 86400
+
+        };
+
+
+        result =
+            value *
+            factors[from] /
+            factors[to];
+
+    }
+
+
+    else if (type === "data") {
+
+        const factors = {
+
+            Byte: 1,
+
+            Kilobyte: 1024,
+
+            Megabyte: 1024 ** 2,
+
+            Gigabyte: 1024 ** 3
+
+        };
+
+
+        result =
+            value *
+            factors[from] /
+            factors[to];
+
+    }
+
+
+    document.getElementById(
+        "toValue"
+    ).value =
+        Number(
+            result.toFixed(8)
+        );
+
 }
 
 
-function convertTemperature(value, from, to) {
-
-    let celsius;
-
-
-    if (from === "Celsius") {
-
-        celsius = value;
-
-    } else if (from === "Fahrenheit") {
-
-        celsius =
-            (value - 32) * 5 / 9;
-
-    } else {
-
-        celsius =
-            value - 273.15;
-
-    }
-
-
-    if (to === "Celsius") {
-
-        return celsius;
-
-    }
-
-    if (to === "Fahrenheit") {
-
-        return celsius * 9 / 5 + 32;
-
-    }
-
-    return celsius + 273.15;
-}
-
+/* Initialize converter */
 
 updateConverter();
 
 
-/* =========================
+/* =====================================
    KEYBOARD SUPPORT
-========================= */
+===================================== */
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener(
+    "keydown",
+    function(event) {
 
-    const key = event.key;
+        const key =
+            event.key;
 
 
-    if (
-        (key >= "0" && key <= "9") ||
-        ["+", "-", "*", "/", ".", "(", ")"].includes(key)
-    ) {
+        if (
+            /[0-9+\-*/().]/.test(key)
+        ) {
 
-        insertValue(key);
+            insertValue(key);
 
-        return;
+            return;
+
+        }
+
+
+        if (key === "Enter") {
+
+            calculate();
+
+            return;
+
+        }
+
+
+        if (key === "Backspace") {
+
+            deleteLast();
+
+            return;
+
+        }
+
+
+        if (key === "Escape") {
+
+            clearDisplay();
+
+            return;
+
+        }
+
+
+        if (key === "%") {
+
+            insertValue("%");
+
+        }
+
     }
+);
 
 
-    if (key === "Enter" || key === "=") {
+/* =====================================
+   INITIALIZE HISTORY
+===================================== */
 
-        calculate();
+displayHistory();
 
-        return;
-    }
+updateStopwatch();
 
-
-    if (key === "Backspace") {
-
-        deleteLast();
-
-        return;
-    }
-
-
-    if (key === "Escape") {
-
-        clearDisplay();
-
-    }
-
-});
+updateCountdown();
